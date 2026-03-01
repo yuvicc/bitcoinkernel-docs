@@ -2,12 +2,12 @@
 title: Rust Bindings
 ---
 
-# Rust Bindings — Coming Soon
+# Rust Bindings — [`rust-bitcoinkernel`](https://github.com/sedited/rust-bitcoinkernel) (Coming Soon)
 
 Rust bindings for `libbitcoinkernel` are not yet available in this documentation.
 
 !!! note "Want to contribute?"
-    If you are working on Rust bindings for `libbitcoinkernel`, we would love to include your documentation here. See the [contributor guide](https://github.com/yuvicc/bitcoinkernel-docs/blob/master/README.md) to learn how to add a new language section.
+    If you are familiar with Rust bindings for `libbitcoinkernel`, we would love to include the documentation here. See the [contributor guide](https://github.com/yuvicc/bitcoinkernel-docs/blob/master/README.md) to learn how to add a new language section.
 
 ---
 
@@ -16,7 +16,6 @@ Rust bindings for `libbitcoinkernel` are not yet available in this documentation
 Rust bindings will expose the full libbitcoinkernel C API with safe Rust wrappers, including:
 
 - Safe FFI wrappers around all kernel types
-- RAII resource management via `Drop`
 - `Result`-based error handling
 - Chainstate, block, and transaction access
 

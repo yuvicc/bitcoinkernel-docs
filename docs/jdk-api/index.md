@@ -3,7 +3,7 @@ title: Java Bindings
 ---
 
 
-# Java Bindings — `bitcoinkernel-jdk`
+# JDK Bindings — [`bitcoinkernel-jdk`](https://github.com/yuvicc/bitcoinkernel-jdk)
 
 `bitcoinkernel-jdk` provides idiomatic Java bindings for libbitcoinkernel using the Foreign Function & Memory (FFM) API introduced in JDK 21 and finalized in JDK 22.
 
@@ -13,7 +13,7 @@ title: Java Bindings
 
 | Requirement | Value |
 |:------------|:------|
-| JDK | 25+ (FFM API, stable) |
+| JDK | 25 (FFM API, stable) |
 | Library | `libbitcoinkernel.so` on `java.library.path` |
 | Package | `org.bitcoinkernel` |
 

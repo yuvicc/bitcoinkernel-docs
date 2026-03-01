@@ -2,12 +2,12 @@
 title: .NET Bindings
 ---
 
-# .NET Bindings — Coming Soon
+# .NET Bindings — [`dotnet-bitcoinkernel`](https://github.com/janb84/BitcoinKernel.NET) Coming Soon
 
 .NET bindings for `libbitcoinkernel` are not yet available in this documentation.
 
 !!! note "Want to contribute?"
-    If you are working on .NET bindings for `libbitcoinkernel`, we would love to include your documentation here. See the [contributor guide](https://github.com/yuvicc/bitcoinkernel-docs/blob/master/README.md) to learn how to add a new language section.
+    If you are familiar with .NET bindings for `libbitcoinkernel`, we would love to include the documentation here. See the [contributor guide](https://github.com/yuvicc/bitcoinkernel-docs/blob/master/README.md) to learn how to add a new language section.
 
 ---
 
@@ -18,7 +18,6 @@ title: .NET Bindings
 - P/Invoke or `LibraryImport` FFI bindings
 - `IDisposable` resource management
 - Chainstate, block, and transaction access
-- Async-friendly notification callbacks
 
 ---
 

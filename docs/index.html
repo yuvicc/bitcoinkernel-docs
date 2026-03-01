@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitcoin Kernel — API Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0a0c;
+    --bg-secondary: #111114;
+    --bg-tertiary: #18181c;
+    --bg-card: #1a1a1f;
+    --bg-code: #0d0d10;
+    --border-dim: #222228;
+    --border-med: #2a2a32;
+    --text-primary: #e8e8ec;
+    --text-secondary: #8888a0;
+    --text-muted: #55556a;
+    --accent-orange: #f7931a;
+    --accent-orange-dim: rgba(247, 147, 26, 0.12);
+    --accent-orange-glow: rgba(247, 147, 26, 0.25);
+    --accent-blue: #5b9cf5;
+    --accent-green: #4ade80;
+    --accent-purple: #a78bfa;
+    --accent-red: #f87171;
+    --accent-cyan: #22d3ee;
+    --accent-yellow: #fbbf24;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-sans: 'DM Sans', -apple-system, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background: var(--accent-orange);
+    color: #000;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  /* ── Grid Noise Overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      radial-gradient(ellipse 800px 600px at 20% 0%, rgba(247,147,26,0.04), transparent),
+      radial-gradient(ellipse 600px 400px at 80% 20%, rgba(91,156,245,0.03), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,12,0.85);
+    backdrop-filter: blur(20px) saturate(1.2);
+    border-bottom: 1px solid var(--border-dim);
+    transition: all 0.3s;
+  }
+
+  .header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--text-primary);
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent-orange);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #000;
+    font-family: var(--font-mono);
+  }
+
+  .logo-text {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-text span { color: var(--text-muted); font-weight: 400; }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .header-nav a:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+  }
+
+  .header-nav .gh-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--border-dim);
+    margin-left: 8px;
+  }
+
+  .header-nav .gh-link:hover {
+    border-color: var(--border-med);
+  }
+
+  /* ── Layout ── */
+  .page-layout {
+    display: flex;
+    max-width: 1400px;
+    margin: 64px auto 0;
+    min-height: calc(100vh - 64px);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    border-right: 1px solid var(--border-dim);
+    padding: 24px 0;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    padding: 0 16px;
+    margin-bottom: 24px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 450;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+
+  .sidebar-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+  }
+
+  .sidebar-link.active {
+    color: var(--accent-orange);
+    background: var(--accent-orange-dim);
+  }
+
+  .sidebar-link .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .dot-c { background: var(--accent-blue); }
+  .dot-cpp { background: var(--accent-purple); }
+  .dot-rust { background: var(--accent-orange); }
+  .dot-python { background: var(--accent-green); }
+  .dot-java { background: var(--accent-red); }
+  .dot-go { background: var(--accent-cyan); }
+
+  /* ── Main Content ── */
+  .main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 40px 48px 80px;
+  }
+
+  /* ── Hero Section ── */
+  .hero {
+    margin-bottom: 60px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px 4px 8px;
+    background: var(--accent-orange-dim);
+    border: 1px solid rgba(247,147,26,0.15);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--accent-orange);
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-family: var(--font-mono);
+  }
+
+  .hero-badge .pulse {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-orange);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent-orange);
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 640px;
+    line-height: 1.7;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Section ── */
+  .doc-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 100px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .section-header .lang-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .lang-tag-c { background: rgba(91,156,245,0.12); color: var(--accent-blue); }
+  .lang-tag-cpp { background: rgba(167,139,250,0.12); color: var(--accent-purple); }
+  .lang-tag-rust { background: var(--accent-orange-dim); color: var(--accent-orange); }
+  .lang-tag-python { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+  .lang-tag-java { background: rgba(248,113,113,0.12); color: var(--accent-red); }
+  .lang-tag-go { background: rgba(34,211,238,0.12); color: var(--accent-cyan); }
+
+  .doc-section h2 {
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  .doc-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+    color: var(--text-primary);
+  }
+
+  .doc-section h4 {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    margin: 24px 0 10px;
+    color: var(--text-secondary);
+  }
+
+  .doc-section p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 16px;
+    max-width: 720px;
+  }
+
+  /* ── Code Blocks ── */
+  .code-block {
+    background: var(--bg-code);
+    border: 1px solid var(--border-dim);
+    border-radius: 10px;
+    margin: 16px 0 24px;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-dim);
+  }
+
+  .code-filename {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-filename .file-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .copy-btn {
+    background: none;
+    border: 1px solid var(--border-dim);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text-secondary);
+  }
+
+  .code-body {
+    padding: 16px 20px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .code-body pre {
+    white-space: pre;
+    tab-size: 4;
+  }
+
+  /* Syntax colors */
+  .kw { color: var(--accent-purple); }
+  .fn { color: var(--accent-blue); }
+  .str { color: var(--accent-green); }
+  .cm { color: var(--text-muted); font-style: italic; }
+  .tp { color: var(--accent-orange); }
+  .num { color: var(--accent-yellow); }
+  .op { color: var(--text-muted); }
+  .pp { color: var(--accent-red); }
+
+  /* ── API Cards ── */
+  .api-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .api-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 10px;
+    padding: 20px 24px;
+    transition: all 0.2s;
+  }
+
+  .api-card:hover {
+    border-color: var(--border-med);
+    background: var(--bg-tertiary);
+  }
+
+  .api-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .api-card-name {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .api-card-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-create { background: rgba(74,222,128,0.12); color: var(--accent-green); }
+  .badge-destroy { background: rgba(248,113,113,0.12); color: var(--accent-red); }
+  .badge-read { background: rgba(91,156,245,0.12); color: var(--accent-blue); }
+  .badge-validate { background: var(--accent-orange-dim); color: var(--accent-orange); }
+  .badge-config { background: rgba(167,139,250,0.12); color: var(--accent-purple); }
+
+  .api-card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .api-card-sig {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--bg-code);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ── Feature Grid ── */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0 32px;
+  }
+
+  .feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 10px;
+    padding: 24px;
+    transition: all 0.2s;
+  }
+
+  .feature-card:hover {
+    border-color: var(--border-med);
+    transform: translateY(-2px);
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+
+  .feature-card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--text-primary);
+  }
+
+  .feature-card p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ── Params Table ── */
+  .params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+
+  .params-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border-dim);
+    font-weight: 600;
+  }
+
+  .params-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-dim);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+
+  .params-table tr:last-child td { border-bottom: none; }
+
+  .params-table .param-name {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--accent-blue);
+    font-weight: 500;
+  }
+
+  .params-table .param-type {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-purple);
+  }
+
+  /* ── Callout ── */
+  .callout {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    font-size: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .callout-warn {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+    color: var(--accent-yellow);
+  }
+
+  .callout-info {
+    background: rgba(91,156,245,0.06);
+    border: 1px solid rgba(91,156,245,0.15);
+    color: var(--accent-blue);
+  }
+
+  .callout-tip {
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.15);
+    color: var(--accent-green);
+  }
+
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Tab System ── */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab-btn {
+    padding: 8px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-dim);
+    border-bottom: 1px solid var(--border-dim);
+    border-radius: 8px 8px 0 0;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tab-btn:hover { color: var(--text-secondary); }
+
+  .tab-btn.active {
+    background: var(--bg-code);
+    color: var(--text-primary);
+    border-bottom-color: var(--bg-code);
+  }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border-dim);
+    padding: 32px 48px;
+    margin-left: 260px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  footer a:hover { color: var(--accent-orange); }
+
+  .lang-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+
+  .lang-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-dim);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .lang-pill:hover {
+    border-color: var(--border-med);
+    color: var(--text-primary);
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border-dim);
+    margin: 48px 0;
+  }
+
+  .inline-code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    padding: 2px 7px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-dim);
+    border-radius: 4px;
+    color: var(--accent-orange);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .sidebar { display: none; }
+    .main-content { padding: 24px 20px 60px; }
+    footer { margin-left: 0; padding: 24px 20px; }
+    .feature-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 36px; }
+    .hero-stats { flex-wrap: wrap; }
+  }
+
+  /* ── Smooth reveal ── */
+  .doc-section {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HEADER ═══════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <div class="logo-icon">₿</div>
+      <div class="logo-text">bitcoinkernel<span>.docs</span></div>
+    </a>
+    <nav class="header-nav">
+      <a href="#overview">Overview</a>
+      <a href="#quickstart">Quickstart</a>
+      <a href="c-api/">C API Reference</a>
+      <a href="cpp-api/">C++ Reference</a>
+      <a href="java-api/">Java Reference</a>
+      <a class="gh-link" href="https://github.com/bitcoin/bitcoin" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════ PAGE LAYOUT ═══════════ -->
+<div class="page-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a class="sidebar-link active" href="#overview" onclick="setActive(this)">Introduction</a>
+      <a class="sidebar-link" href="#quickstart" onclick="setActive(this)">What Can You Do</a>
+      <a class="sidebar-link" href="#architecture" onclick="setActive(this)">Architecture</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">API Reference</div>
+      <a class="sidebar-link" href="c-api/"><span class="dot dot-c"></span>C API</a>
+      <a class="sidebar-link" href="cpp-api/"><span class="dot dot-cpp"></span>C++ Wrapper</a>
+      <a class="sidebar-link" href="java-api/"><span class="dot dot-java"></span>Java Bindings</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">On This Page</div>
+      <a class="sidebar-link" href="#c-api" onclick="setActive(this)"><span class="dot dot-c"></span>C API Overview</a>
+      <a class="sidebar-link" href="#context" onclick="setActive(this)">Context &amp; Options</a>
+      <a class="sidebar-link" href="#chainman" onclick="setActive(this)">ChainstateManager</a>
+      <a class="sidebar-link" href="#blocks" onclick="setActive(this)">Block Operations</a>
+      <a class="sidebar-link" href="#scripts" onclick="setActive(this)">Script Verification</a>
+      <a class="sidebar-link" href="#callbacks" onclick="setActive(this)">Callbacks</a>
+      <a class="sidebar-link" href="#bindings" onclick="setActive(this)">Language Bindings</a>
+      <a class="sidebar-link" href="#error-handling" onclick="setActive(this)">Error Handling</a>
+      <a class="sidebar-link" href="#memory" onclick="setActive(this)">Memory Management</a>
+      <a class="sidebar-link" href="#threading" onclick="setActive(this)">Thread Safety</a>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main-content">
+
+    <!-- ═══════ HERO ═══════ -->
+    <section class="hero" id="overview">
+      <div class="hero-badge"><span class="pulse"></span> Under Active Development</div>
+      <h1>Bitcoin Kernel <em>API</em></h1>
+      <p class="hero-desc">
+        A stable C API for Bitcoin Core's consensus validation engine. Build block explorers, alternative node implementations, research tools, and more — in any language.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-value">6</div>
+          <div class="stat-label">Official Bindings</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">C</div>
+          <div class="stat-label">Core ABI</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">MIT</div>
+          <div class="stat-label">License</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ FEATURES ═══════ -->
+    <section class="doc-section" id="quickstart">
+      <div class="section-header">
+        <h2>What Can You Do</h2>
+      </div>
+      <p>
+        The <span class="inline-code">libbitcoinkernel</span> library exposes Bitcoin Core's validation logic through a stable C API. Unlike the deprecated <span class="inline-code">libbitcoinconsensus</span>, it is a stateful engine capable of full block validation, UTXO management, and chain state operations.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon" style="background: var(--accent-orange-dim);">⛓️</div>
+          <h4>Block Validation</h4>
+          <p>Validate blocks using the exact same consensus rules as Bitcoin Core. Process blocks against the current chain state with full contextual checks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: rgba(91,156,245,0.12);">📜</div>
+          <h4>Script Verification</h4>
+          <p>Verify transaction scripts including P2SH, SegWit, and Taproot spend paths. Stateless verification requires no context setup.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: rgba(74,222,128,0.12);">🗄️</div>
+          <h4>Block Data Access</h4>
+          <p>Read block data, undo data, and iterate over the UTXO set. Retrieve block indices by height or hash for chain traversal.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: rgba(167,139,250,0.12);">🔗</div>
+          <h4>Chain Management</h4>
+          <p>Initialize and manage chain state from a data directory. Supports mainnet, testnet, signet, and regtest chains.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: rgba(248,113,113,0.12);">📡</div>
+          <h4>Validation Callbacks</h4>
+          <p>Receive asynchronous notifications about validation events — block connected, block disconnected, error conditions, and progress updates.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon" style="background: rgba(34,211,238,0.12);">🧩</div>
+          <h4>FFI Bindings</h4>
+          <p>The C ABI makes it straightforward to create bindings for any language with C interop. Official bindings exist for C++, and Java.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════ ARCHITECTURE ═══════ -->
+    <section class="doc-section" id="architecture">
+      <div class="section-header">
+        <h2>Architecture Overview</h2>
+      </div>
+      <p>
+        The library follows an opaque-pointer pattern. All kernel objects are created through factory functions and destroyed with corresponding destroy functions. Objects are represented as opaque <span class="inline-code">btck_*</span> pointers — you never access internal fields directly.
+      </p>
+      <p>
+        The lifecycle for most operations follows this pattern: create a <strong>Context</strong> (with optional configuration), create a <strong>ChainstateManager</strong> for chain state operations, then use the manager to validate blocks or read data. When finished, destroy objects in reverse order.
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename"><span class="file-dot" style="background: var(--accent-blue)"></span>lifecycle.c</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body"><pre><span class="cm">// 1. Create context with options</span>
+<span class="tp">btck_ContextOptions</span>* opts = <span class="fn">btck_context_options_create</span>();
+<span class="fn">btck_context_options_set_chainparams</span>(opts, <span class="fn">btck_chain_parameters_create</span>(<span class="tp">btck_CHAIN_MAINNET</span>));
+<span class="tp">btck_Context</span>* ctx = <span class="fn">btck_context_create</span>(opts);
+
+<span class="cm">// 2. Create chainstate manager</span>
+<span class="tp">btck_ChainstateManagerOptions</span>* cm_opts = <span class="fn">btck_chainstate_manager_options_create</span>(
+    ctx, data_dir, data_dir_len, blocks_dir, blocks_dir_len);
+<span class="tp">btck_ChainstateManager</span>* chainman = <span class="fn">btck_chainstate_manager_create</span>(ctx, cm_opts);
+
+<span class="cm">// 3. Use the manager — validate blocks, read data, etc.</span>
+<span class="fn">btck_chainstate_manager_process_block</span>(ctx, chainman, block, &amp;accepted);
+
+<span class="cm">// 4. Tear down in reverse order</span>
+<span class="fn">btck_chainstate_manager_destroy</span>(chainman, ctx);
+<span class="fn">btck_chainstate_manager_options_destroy</span>(cm_opts);
+<span class="fn">btck_context_destroy</span>(ctx);
+<span class="fn">btck_context_options_destroy</span>(opts);</pre></div>
+      </div>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div>Objects must be destroyed in reverse creation order. The Context must outlive all objects that were created with it.</div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════ C API ═══════ -->
+    <section class="doc-section" id="c-api">
+      <div class="section-header">
+        <span class="lang-tag lang-tag-c">C</span>
+        <h2>Core C API</h2>
+      </div>
+      <p>
+        The foundational API defined in <span class="inline-code">bitcoinkernel.h</span>. All language bindings ultimately call through this C interface. See the <a href="c-api/" style="color: var(--accent-blue)">full C API reference</a> for complete documentation.
+      </p>
+
+      <h3 id="context">Context &amp; Configuration</h3>
+      <div class="api-grid">
+        <div class="api-card">
+          <div class="api-card-head"><span class="api-card-name">btck_context_create</span><span class="api-card-badge badge-create">Create</span></div>
+          <div class="api-card-desc">Create a new kernel context. If options are NULL, defaults are used.</div>
+          <div class="api-card-sig"><span class="tp">btck_Context</span>* <span class="fn">btck_context_create</span>(<span class="kw">const</span> <span class="tp">btck_ContextOptions</span>* options);</div>
+        </div>
+        <div class="api-card">
+          <div class="api-card-head"><span class="api-card-name">btck_context_options_set_chainparams</span><span class="api-card-badge badge-config">Config</span></div>
+          <div class="api-card-desc">Attach chain parameters (mainnet, testnet, signet, regtest) to the context options.</div>
+          <div class="api-card-sig"><span class="kw">void</span> <span class="fn">btck_context_options_set_chainparams</span>(<span class="tp">btck_ContextOptions</span>* opts, <span class="tp">btck_ChainParameters</span>* params);</div>
+        </div>
+        <div class="api-card">
+          <div class="api-card-head"><span class="api-card-name">btck_context_destroy</span><span class="api-card-badge badge-destroy">Destroy</span></div>
+          <div class="api-card-desc">Destroy the context and free all resources. Call after all dependent objects are destroyed.</div>
+          <div class="api-card-sig"><span class="kw">void</span> <span class="fn">btck_context_destroy</span>(<span class="tp">btck_Context</span>* context);</div>
+        </div>
+      </div>
+
+      <h3 id="chainman">ChainstateManager</h3>
+      <div class="api-grid">
+        <div class="api-card">
+          <div class="api-card-head"><span class="api-card-name">btck_chainstate_manager_create</span><span class="api-card-badge badge-create">Create</span></div>
+          <div class="api-card-desc">Create a chain state manager bound to a data directory. Loads or initializes the block index and UTXO set.</div>
+          <div class="api-card-sig"><span class="tp">btck_ChainstateManager</span>* <span class="fn">btck_chainstate_manager_create</span>(<span class="kw">const</span> <span class="tp">btck_Context</span>* ctx, <span class="kw">const</span> <span class="tp">btck_ChainstateManagerOptions</span>* opts);</div>
+        </div>
+        <div class="api-card">
+          <div class="api-card-head"><span class="api-card-name">btck_chainstate_manager_process_block</span><span class="api-card-badge badge-validate">Validate</span></div>
+          <div class="api-card-desc">Submit a block for full validation. If accepted, it is connected to the chain.</div>
+          <div class="api-card-sig"><span class="kw">bool</span> <span class="fn">btck_chainstate_manager_process_block</span>(<span class="kw">const</span> <span class="tp">btck_Context</span>* ctx, <span class="tp">btck_ChainstateManager</span>* cm, <span class="kw">const</span> <span class="tp">btck_Block</span>* block, <span class="kw">bool</span>* accepted);</div>
+        </div>
+      </div>
+
+      <h3 id="scripts">Script Verification</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename"><span class="file-dot" style="background: var(--accent-blue)"></span>verify.c</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body"><pre><span class="tp">btck_ScriptPubkey</span>* spk = <span class="fn">btck_script_pubkey_create</span>(script_bytes, script_len);
+<span class="tp">btck_Transaction</span>*  tx  = <span class="fn">btck_transaction_create</span>(raw_tx, raw_tx_len);
+<span class="tp">btck_ScriptVerifyStatus</span> status;
+
+<span class="kw">int</span> ok = <span class="fn">btck_script_pubkey_verify</span>(
+    spk, amount, tx, spent_outputs, n_outputs, input_idx,
+    <span class="tp">btck_SCRIPT_FLAGS_VERIFY_ALL</span>, &amp;status);
+
+<span class="fn">btck_transaction_destroy</span>(tx);
+<span class="fn">btck_script_pubkey_destroy</span>(spk);</pre></div>
+      </div>
+
+      <h3 id="callbacks">Validation Callbacks</h3>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename"><span class="file-dot" style="background: var(--accent-blue)"></span>callbacks.c</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body"><pre><span class="kw">void</span> <span class="fn">on_block_tip</span>(<span class="kw">void</span>* user_data, <span class="tp">btck_SynchronizationState</span> state,
+                   <span class="kw">const</span> <span class="tp">btck_BlockIndex</span>* index) {
+    <span class="fn">printf</span>(<span class="str">"New tip at height: %d\n"</span>, <span class="fn">btck_block_index_get_height</span>(index));
+}
+
+<span class="tp">btck_ValidationInterfaceCallbacks</span> cbs = {
+    .<span class="fn">block_tip</span>  = on_block_tip,
+    .<span class="fn">user_data</span>  = my_app_state,
+};
+<span class="fn">btck_context_options_set_validation_interface</span>(opts, cbs);</pre></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- ═══════ BINDINGS ═══════ -->
+    <section class="doc-section" id="bindings">
+      <div class="section-header">
+        <h2>Language Bindings</h2>
+      </div>
+      <p>Official bindings documented in this site. Click through to the full structured reference.</p>
+      <div class="lang-pills">
+        <a class="lang-pill" href="c-api/"><span class="dot dot-c"></span>C API</a>
+        <a class="lang-pill" href="cpp-api/"><span class="dot dot-cpp"></span>C++ Wrapper</a>
+        <a class="lang-pill" href="java-api/"><span class="dot dot-java"></span>Java (bitcoinkernel-jdk)</a>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename"><span class="file-dot" style="background: var(--accent-purple)"></span>C++ — RAII wrapper</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body"><pre><span class="pp">#include</span> <span class="str">&lt;bitcoinkernel_wrapper.hpp&gt;</span>
+
+btck::<span class="tp">ContextOptions</span> opts{};
+opts.<span class="fn">SetNotifications</span>(std::make_shared&lt;<span class="tp">MyNotifications</span>&gt;());
+
+btck::<span class="tp">Context</span>   ctx{opts};
+btck::<span class="tp">ChainMan</span> cm{ctx, {ctx, data_dir, blocks_dir}};
+cm.<span class="fn">ImportBlocks</span>({});
+
+<span class="kw">for</span> (<span class="kw">auto</span> entry : cm.<span class="fn">GetChain</span>().<span class="fn">Entries</span>())
+    std::cout &lt;&lt; entry.<span class="fn">GetHeight</span>() &lt;&lt; "\n";</pre></div>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-filename"><span class="file-dot" style="background: var(--accent-red)"></span>Java — bitcoinkernel-jdk</span>
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <div class="code-body"><pre><span class="kw">try</span> (<span class="tp">BitcoinKernel</span> kernel = <span class="kw">new</span> <span class="tp">BitcoinKernel</span>(
+        <span class="tp">ChainType</span>.MAINNET,
+        Path.<span class="fn">of</span>(home, <span class="str">".bitcoin"</span>),
+        Path.<span class="fn">of</span>(home, <span class="str">".bitcoin"</span>, <span class="str">"blocks"</span>),
+        System.out::println)) {
+
+    <span class="tp">ChainstateManager</span> csm = kernel.<span class="fn">getChainstateManager</span>();
+    csm.<span class="fn">ImportBlocks</span>(<span class="kw">new</span> <span class="tp">String</span>[]{});
+
+    <span class="kw">for</span> (<span class="tp">BlockTreeEntry</span> e : csm.<span class="fn">getChain</span>())
+        System.out.<span class="fn">println</span>(<span class="str">"Height: "</span> + e.<span class="fn">getHeight</span>());
+}</pre></div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <section class="doc-section" id="error-handling">
+      <div class="section-header"><h2>Error Handling</h2></div>
+      <p>The C API returns NULL or false on failure. For script verification, a <span class="inline-code">btck_ScriptVerifyStatus</span> output parameter provides detailed error info. Always register a <strong>fatal_error</strong> callback — if it fires, halt immediately.</p>
+    </section>
+
+    <section class="doc-section" id="memory">
+      <div class="section-header"><h2>Memory Management</h2></div>
+      <p>Every <span class="inline-code">btck_*_create</span> has a matching <span class="inline-code">btck_*_destroy</span>. Destroy in reverse creation order. Language bindings handle this automatically — Rust uses <span class="inline-code">Drop</span>, Java uses <span class="inline-code">AutoCloseable</span>, C++ uses RAII handles.</p>
+      <div class="callout callout-info">
+        <span class="callout-icon">ℹ️</span>
+        <div>The ChainstateManager requires exclusive access to the data directory. Do not share with a running Bitcoin Core process.</div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="threading">
+      <div class="section-header"><h2>Thread Safety</h2></div>
+      <p>Read operations are thread-safe. Block processing (<span class="inline-code">process_block</span>) must be serialized. Validation callbacks fire on the calling thread.</p>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════ FOOTER ═══════════ -->
+<footer>
+  <div>bitcoinkernel API docs — built for the Bitcoin development community</div>
+  <div>
+    <a href="https://github.com/bitcoin/bitcoin" target="_blank">GitHub</a> ·
+    <a href="c-api/">C API</a> ·
+    <a href="cpp-api/">C++ API</a> ·
+    <a href="java-api/">Java API</a>
+  </div>
+</footer>
+
+<script>
+  function setActive(el) {
+    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  const sections = document.querySelectorAll('.doc-section, .hero');
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        sidebarLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-100px 0px -60% 0px', threshold: 0.1 });
+
+  sections.forEach(s => { if (s.id) observer.observe(s); });
+
+  function copyCode(btn) {
+    const code = btn.closest('.code-block').querySelector('.code-body pre').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+  }
+</script>
+</body>
+</html>

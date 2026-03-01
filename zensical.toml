@@ -1,0 +1,72 @@
+[project]
+site_name    = "bitcoinkernel API Docs"
+site_description = "Reference documentation for Bitcoin Core's libbitcoinkernel — the embedded consensus and validation engine — and its language bindings."
+
+copyright = "Copyright &copy; Bitcoin Core developers. Distributed under the MIT software license."
+
+nav = [
+  { "Home" = "index.html" },
+  { "C API" = [
+    { "Overview"   = "c-api/index.md" },
+    { "Types"      = "c-api/types.md" },
+    { "Functions"  = "c-api/functions.md" },
+  ]},
+  { "C++ Wrapper" = [
+    { "Overview" = "cpp-api/index.md" },
+    { "Enums"    = "cpp-api/enums.md" },
+    { "Classes"  = "cpp-api/classes.md" },
+  ]},
+  { "Java Bindings" = [
+    { "Overview"           = "java-api/index.md" },
+    { "BitcoinKernel"      = "java-api/bitcoinkernel.md" },
+    { "KernelTypes"        = "java-api/kernel-types.md" },
+    { "Chainstate"         = "java-api/chainstate.md" },
+    { "Blocks"             = "java-api/blocks.md" },
+    { "Transactions"       = "java-api/transactions.md" },
+    { "KernelData"         = "java-api/kernel-data.md" },
+    { "NotificationsManager" = "java-api/notifications.md" },
+    { "ContextManager"     = "java-api/context.md" },
+    { "Logger"             = "java-api/logger.md" },
+  ]},
+]
+
+[project.theme]
+logo = "assets/bitcoin-logo.svg"
+features = [
+  "announce.dismiss",
+  "content.code.annotate",
+  "content.code.copy",
+  "content.code.select",
+  "content.footnote.tooltips",
+  "content.tabs.link",
+  "content.tooltips",
+  "navigation.footer",
+  "navigation.indexes",
+  "navigation.instant",
+  "navigation.instant.prefetch",
+  "navigation.path",
+  "navigation.sections",
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.top",
+  "navigation.tracking",
+  "search.highlight",
+]
+
+[project.theme.font]
+text = "Inter"
+code = "JetBrains Mono"
+
+[[project.theme.palette]]
+scheme   = "slate"
+primary  = "deep-orange"
+accent   = "orange"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+scheme   = "default"
+primary  = "deep-orange"
+accent   = "orange"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to dark mode"

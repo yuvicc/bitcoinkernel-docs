@@ -28,6 +28,10 @@ nav = [
     { "ContextManager"     = "java-api/context.md" },
     { "Logger"             = "java-api/logger.md" },
   ]},
+  { "Go Bindings"     = [{ "Overview" = "go-api/index.md" }] },
+  { "Rust Bindings"   = [{ "Overview" = "rust-api/index.md" }] },
+  { "Python Bindings" = [{ "Overview" = "python-api/index.md" }] },
+  { ".NET Bindings"   = [{ "Overview" = "dotnet-api/index.md" }] },
 ]
 
 [project.theme]

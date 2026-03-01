@@ -814,7 +814,6 @@
       <a class="sidebar-link" href="#bindings" onclick="setActive(this)">Language Bindings</a>
       <a class="sidebar-link" href="#error-handling" onclick="setActive(this)">Error Handling</a>
       <a class="sidebar-link" href="#memory" onclick="setActive(this)">Memory Management</a>
-      <a class="sidebar-link" href="#threading" onclick="setActive(this)">Thread Safety</a>
     </div>
   </aside>
 
@@ -850,7 +849,7 @@
         <h2>What Can You Do</h2>
       </div>
       <p>
-        The <span class="inline-code">libbitcoinkernel</span> library exposes Bitcoin Core's validation logic through a stable C API. Unlike the deprecated <span class="inline-code">libbitcoinconsensus</span>, it is a stateful engine capable of full block validation, UTXO management, and chain state operations.
+        The <span class="inline-code">Bitcoinkernel</span> library exposes Bitcoin Core's validation logic through a stable C API. It is a stateful and capable of full block validation, UTXO management, and chain state operations.
       </p>
 
       <div class="feature-grid">
@@ -862,12 +861,12 @@
         <div class="feature-card">
           <div class="feature-icon" style="background: rgba(91,156,245,0.12);">📜</div>
           <h4>Script Verification</h4>
-          <p>Verify transaction scripts including P2SH, SegWit, and Taproot spend paths. Stateless verification requires no context setup.</p>
+          <p>Verify transaction scripts including P2SH, SegWit, and Taproot spend paths. For now, the script verification requires no context.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: rgba(74,222,128,0.12);">🗄️</div>
-          <h4>Block Data Access</h4>
-          <p>Read block data, undo data, and iterate over the UTXO set. Retrieve block indices by height or hash for chain traversal.</p>
+          <h4>Block and Header Data Access</h4>
+          <p>Read block data, undo data, and iterate over the UTXO set. Retrieve block indices by height or hash for chain traversal. Create and validate block header of a block.</p>
         </div>
         <div class="feature-card">
           <div class="feature-icon" style="background: rgba(167,139,250,0.12);">🔗</div>
@@ -882,7 +881,7 @@
         <div class="feature-card">
           <div class="feature-icon" style="background: rgba(34,211,238,0.12);">🧩</div>
           <h4>FFI Bindings</h4>
-          <p>The C ABI makes it straightforward to create bindings for any language with C interop. Official bindings exist for C++, and JDK.</p>
+          <p>The C ABI makes it straightforward to create bindings for any language with C interop. Official bindings exist for C++, Rust, JDK, Python, Go and dotnet.</p>
         </div>
       </div>
     </section>
@@ -980,7 +979,7 @@
       <h3 id="scripts">Script Verification</h3>
       <div class="code-block">
         <div class="code-header">
-          <span class="code-filename"><span class="file-dot" style="background: var(--accent-blue)"></span>verify.c</span>
+          <span class="code-filename"><span class="file-dot" style="background: var(--accent-blue)"></span>script_verify.c</span>
           <button class="copy-btn" onclick="copyCode(this)">Copy</button>
         </div>
         <div class="code-body"><pre><span class="tp">btck_ScriptPubkey</span>* spk = <span class="fn">btck_script_pubkey_create</span>(script_bytes, script_len);
@@ -1021,7 +1020,7 @@
       <div class="section-header">
         <h2>Language Bindings</h2>
       </div>
-      <p>Official bindings documented in this site. Click through to the full structured reference.</p>
+      <p>Current language bindings documented here in this site.</p>
       <div class="lang-pills">
         <a class="lang-pill" href="c-api/"><span class="dot dot-c"></span>C API</a>
         <a class="lang-pill" href="cpp-api/"><span class="dot dot-cpp"></span>C++ Wrapper</a>
@@ -1082,22 +1081,21 @@ cm.<span class="fn">ImportBlocks</span>({});
       </div>
     </section>
 
-    <section class="doc-section" id="threading">
-      <div class="section-header"><h2>Thread Safety</h2></div>
-      <p>Read operations are thread-safe. Block processing (<span class="inline-code">process_block</span>) must be serialized. Validation callbacks fire on the calling thread.</p>
-    </section>
-
   </main>
 </div>
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer>
-  <div>bitcoinkernel API docs — built for the Bitcoin development community</div>
+  <div>Bitcoinkernel API docs — built for the Bitcoin development community</div>
   <div>
     <a href="https://github.com/bitcoin/bitcoin" target="_blank">GitHub</a> ·
     <a href="c-api/">C API</a> ·
     <a href="cpp-api/">C++ API</a> ·
     <a href="jdk-api/">JDK API</a>
+    <a href="python-api/">JDK API</a>
+    <a href="go-api/">JDK API</a>
+    <a href="rust-api/">JDK API</a>
+    <a href="dotnet-api/">JDK API</a>
   </div>
 </footer>
 

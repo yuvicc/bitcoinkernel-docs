@@ -1,8 +1,8 @@
-# bitcoinkernel API Docs
+# Bitcoinkernel API Docs
 
-Reference documentation for [libbitcoinkernel](https://github.com/bitcoin/bitcoin) — Bitcoin Core's consensus and validation engine — and its language bindings.
+Reference documentation for [Bitcoinkernel](https://github.com/bitcoin/bitcoin) — Bitcoin Core's consensus and validation engine — and its language bindings.
 
-Live site: **https://yuvicc.github.io/bitcoinkernel-docs/**
+Live site: **https://yuvicc.dev/bitcoinkernel-docs/**
 
 ---
 
@@ -104,11 +104,9 @@ let ctx = Context::new()?;
 ### 5. Build and check
 
 ```bash
-zensical build        # output goes to site/
-zensical serve        # live-reload dev server at http://localhost:8000
+zensical build
+zensical serve
 ```
-
-Fix any warnings about missing files before opening a PR.
 
 ### 6. Open a pull request
 

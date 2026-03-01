@@ -2,7 +2,6 @@
 title: Functions
 ---
 
-
 # C API — Functions
 
 ---

@@ -57,6 +57,12 @@ features = [
   "search.highlight",
 ]
 
+[project.plugins.mkdocstrings]
+default_handler = "python"
+
+[project.plugins.mkdocstrings.handlers.python.options]
+show_source = false
+
 [project.theme.font]
 text = "Inter"
 code = "JetBrains Mono"

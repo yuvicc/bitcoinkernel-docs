@@ -31,7 +31,16 @@ nav = [
   { "Go Bindings"     = [{ "Overview" = "go-api/index.md" }] },
   { "Rust Bindings"   = [{ "Overview" = "rust-api/index.md" }] },
   { "Python Bindings" = [{ "Overview" = "python-api/index.md" }] },
-  { ".NET Bindings"   = [{ "Overview" = "dotnet-api/index.md" }] },
+  { ".NET Bindings"   = [
+    { "Overview"      = "dotnet-api/index.md" },
+    { "KernelTypes"   = "dotnet-api/kernel-types.md" },
+    { "Context"       = "dotnet-api/context.md" },
+    { "Chainstate"    = "dotnet-api/chainstate.md" },
+    { "Blocks"        = "dotnet-api/blocks.md" },
+    { "Transactions"  = "dotnet-api/transactions.md" },
+    { "ScriptVerification" = "dotnet-api/script-verification.md" },
+    { "Logger"        = "dotnet-api/logger.md" },
+  ] },
 ]
 
 [project.theme]
